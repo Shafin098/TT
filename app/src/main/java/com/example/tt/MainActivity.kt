@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,12 +14,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.view.View
 import com.google.gson.Gson
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
+import java.io.BufferedReader
 
 
 class MainActivity : AppCompatActivity() {
 
+    // don't change file name
+    // duplicate on AddClass.kt
     private val JSON_FILE_NAME = "schedule_data.json"
     private lateinit var  clockThread: Runnable
     private lateinit var daySelected: String
@@ -30,14 +30,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         startClock()
+        setTodaysDay()
+        addListenerToDaysTv()
 
         val scheduleFileList = fileList().filter { it == JSON_FILE_NAME  }
         if (scheduleFileList.isNotEmpty()) {
             // schedule file exists show data
             layoutInflater.inflate(R.layout.class_card, classes_container)
-            layoutInflater.inflate(R.layout.class_card, classes_container)
-            val scheduleDataFile = openFileInput(JSON_FILE_NAME).reader()
-
+            // open's json data file reads
+            // and updates all views that gets data from schedu;e class
+            updateViews()
         } else {
             // schedule file doesn't exits create new fle
             File(filesDir, JSON_FILE_NAME).createNewFile()
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             val gson = Gson()
             val scheduleDataFile = openFileOutput(JSON_FILE_NAME, Context.MODE_PRIVATE)
             scheduleDataFile.write(gson.toJson(schedule).toByteArray())
-            Log.d("json", gson.toJson(schedule))
+//            Log.d("json", gson.toJson(schedule))
             scheduleDataFile.close()
 
             // first app opened or data file not created
@@ -54,9 +56,38 @@ class MainActivity : AppCompatActivity() {
             next_subject_header.text = "_______"
             next_class_room_header.text = "___"
         }
+        //should be at bottom don't remove
         inflateAddClassCard()
-        setTodaysDay()
-        addListenerToDaysTv()
+    }
+
+    // will update all views which gets data from Schedule class
+    // will re create class cards and notes
+    private fun updateViews() {
+        classes_container.removeAllViews()
+
+        val schedule: Schedule = getSchedule()
+        for (singleClass in schedule.getAllClasses(daySelected)) {
+            val classCardView = layoutInflater.inflate(R.layout.class_card, classes_container)
+            updateClassCard(classCardView, singleClass)
+        }
+    }
+
+    private fun updateClassCard(classCardView: View?, schedule: MutableMap<String, String>) {
+        classCardView?.findViewById<TextView>(R.id.subject_card)?.setText(schedule.get("subject"))
+        // TODO reformat start time
+        classCardView?.findViewById<TextView>(R.id.start_card)?.setText(schedule.get("startHour"))
+        classCardView?.findViewById<TextView>(R.id.at_card)?.setText(schedule.get("at"))
+        // TODO reformat end time
+        classCardView?.findViewById<TextView>(R.id.end_card)?.setText(schedule.get("endHour"))
+        classCardView?.findViewById<TextView>(R.id.by_card)?.setText(schedule.get("by"))
+    }
+
+    private fun getSchedule(): Schedule {
+        val scheduleDataFile = openFileInput(JSON_FILE_NAME).bufferedReader()
+        // extracting all Strings from json data file
+        val jsonDataString = scheduleDataFile.use(BufferedReader::readText)
+        val schedule = Gson().fromJson(jsonDataString, Schedule::class.java)
+        return schedule
     }
 
     private fun inflateAddClassCard() {

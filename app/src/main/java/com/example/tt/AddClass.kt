@@ -1,5 +1,6 @@
 package com.example.tt
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -8,10 +9,15 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_add_class.*
 import kotlinx.android.synthetic.main.clock_input.*
 import android.util.Log
+import com.google.gson.Gson
+import java.io.BufferedReader
 
 
 class AddClass : AppCompatActivity() {
 
+    // don't change file name
+    // duplicate on MainActivity.kt
+    private val JSON_FILE_NAME = "schedule_data.json"
     // 1 when only subject, room and teacher's name input showing
     // 2 starts time input showing
     // 3 ends time input showing
@@ -56,7 +62,28 @@ class AddClass : AppCompatActivity() {
             "endHour" to endHour,
             "endMinute" to endMinute,
             "endAmOrPm" to endAmOrPm)
+        // adding new class to json data file
+        writeToStorage(classMap)
         return classMap
+    }
+
+    // adds new class to json data file
+    private fun writeToStorage(classMap: HashMap<String, String>) {
+        val schedule: Schedule = getSchedule()
+        schedule.addNewClass(daySelected, classMap)
+        val scheduleDataFile = openFileOutput(JSON_FILE_NAME, Context.MODE_PRIVATE)
+        scheduleDataFile.write(Gson().toJson(schedule).toByteArray())
+//            Log.d("json", gson.toJson(schedule))
+        scheduleDataFile.close()
+    }
+
+    // Creates Schedule class object from json string
+    private fun getSchedule(): Schedule {
+        val scheduleDataFile = openFileInput(JSON_FILE_NAME).bufferedReader()
+        // extracting all Strings from json data file
+        val jsonDataString = scheduleDataFile.use(BufferedReader::readText)
+        val schedule = Gson().fromJson(jsonDataString, Schedule::class.java)
+        return schedule
     }
 
     private fun onInputSubmit(btn: View) {
@@ -77,6 +104,7 @@ class AddClass : AppCompatActivity() {
             }
         } else if (inputStage == 2) {
             startHour = time_picker.hour.toString()
+            startMinute = time_picker.minute.toString()
             if (startHour.toInt() >= 12) {
                 startAmOrPm = "pm"
             } else {
@@ -92,15 +120,34 @@ class AddClass : AppCompatActivity() {
             findViewById<TextView>(R.id.clock_text).setText("Ending time")
         } else if (inputStage == 3){
             endHour = time_picker.hour.toString()
-            if (endHour.toInt() >= 12) {
-               endAmOrPm = "pm"
-            } else {
-                endAmOrPm = "am"
-            }
             endMinute = time_picker.minute.toString()
-            val classMap = createClassHashMap()
-            Log.d("input", classMap.toString())
-            finish()
+            if (startHour.toInt() == endHour.toInt()) {
+                if (startMinute.toInt() > endMinute.toInt()) {
+                    Toast.makeText(this, "Invalid time", Toast.LENGTH_LONG).show()
+                } else {
+                    if (endHour.toInt() >= 12) {
+                        endAmOrPm = "pm"
+                    } else {
+                        endAmOrPm = "am"
+                    }
+                    endMinute = time_picker.minute.toString()
+                    val classMap = createClassHashMap()
+                    Log.d("input", classMap.toString())
+                    finish()
+                }
+            } else if (endHour.toInt() < startHour.toInt()) {
+                Toast.makeText(this, "Invalid time", Toast.LENGTH_LONG).show()
+            } else {
+                if (endHour.toInt() >= 12) {
+                    endAmOrPm = "pm"
+                } else {
+                    endAmOrPm = "am"
+                }
+                endMinute = time_picker.minute.toString()
+                val classMap = createClassHashMap()
+                Log.d("input", classMap.toString())
+                finish()
+            }
         }
     }
 

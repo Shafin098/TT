@@ -23,6 +23,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
+            android:id="@+id/start_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="starts "
@@ -50,6 +51,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:fontFamily="@font/montserrat"
             android:textColor="#FFF"/>
         <TextView
+            android:id="@+id/at_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="306"
@@ -71,6 +73,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:textColor="#FFF"/>
 
         <TextView
+            android:id="@+id/end_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
@@ -91,6 +94,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:textColor="#FFF"/>
 
         <TextView
+            android:id="@+id/by_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
