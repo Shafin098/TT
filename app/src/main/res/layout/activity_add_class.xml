@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:padding="16dp"
     tools:context=".AddClass">
 
     <TextView
@@ -47,12 +47,15 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/subject"
+                android:id="@+id/subject_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/rounded_gray"
                 android:hint="type subject here"
+                android:maxLines="1"
+                android:inputType="text"
+                android:textCursorDrawable="@color/text"
                 android:padding="10dp" />
 
             <TextView
@@ -64,12 +67,15 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/at"
+                android:id="@+id/at_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/rounded_gray"
                 android:hint="type class location here"
+                android:maxLines="1"
+                android:inputType="text"
+                android:textCursorDrawable="@color/text"
                 android:padding="10dp" />
 
             <TextView
@@ -81,12 +87,15 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/by"
+                android:id="@+id/by_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/rounded_gray"
                 android:hint="type teacher's name here"
+                android:maxLines="1"
+                android:inputType="text"
+                android:textCursorDrawable="@color/text"
                 android:padding="10dp" />
 
         </LinearLayout>

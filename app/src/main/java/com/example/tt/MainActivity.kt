@@ -1,9 +1,11 @@
 package com.example.tt
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -12,6 +14,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import android.view.View
+import com.google.gson.Gson
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,9 +36,17 @@ class MainActivity : AppCompatActivity() {
             // schedule file exists show data
             layoutInflater.inflate(R.layout.class_card, classes_container)
             layoutInflater.inflate(R.layout.class_card, classes_container)
+            val scheduleDataFile = openFileInput(JSON_FILE_NAME).reader()
+
         } else {
             // schedule file doesn't exits create new fle
             File(filesDir, JSON_FILE_NAME).createNewFile()
+            val schedule: Schedule = Schedule()
+            val gson = Gson()
+            val scheduleDataFile = openFileOutput(JSON_FILE_NAME, Context.MODE_PRIVATE)
+            scheduleDataFile.write(gson.toJson(schedule).toByteArray())
+            Log.d("json", gson.toJson(schedule))
+            scheduleDataFile.close()
 
             // first app opened or data file not created
             // so subject room time ramaining data is not available
@@ -112,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 current_time_header.text = SimpleDateFormat("hh:mm a",
                     Locale.getDefault()).format(Date())
-                handler.postDelayed(clockThread, 60000)
+                handler.postDelayed(clockThread, 15000)
             }
         }
         handler.post(clockThread)
