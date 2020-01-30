@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        startClock()
+
         val scheduleFileList = fileList().filter { it == JSON_FILE_NAME  }
         if (scheduleFileList.isNotEmpty()) {
             // schedule file exists show data
@@ -32,17 +34,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             // schedule file doesn't exits create new fle
             File(filesDir, JSON_FILE_NAME).createNewFile()
-
-            // updating current_time_header TextView every minutes
-            val handler = Handler()
-            clockThread = object: Runnable {
-                 override fun run() {
-                    current_time_header.text = SimpleDateFormat("hh:mm a",
-                        Locale.getDefault()).format(Date())
-                    handler.postDelayed(clockThread, 60000)
-                }
-            }
-            handler.post(clockThread)
 
             // first app opened or data file not created
             // so subject room time ramaining data is not available
@@ -112,6 +103,19 @@ class MainActivity : AppCompatActivity() {
     private fun unSelectDay(day: String) {
         val textViewId = resources.getIdentifier(day, "id", packageName)
         findViewById<TextView>(textViewId).setTextColor(resources.getColor(R.color.text, theme))
+    }
+
+    private fun startClock() {
+        // updating current_time_header TextView to current time every minutes
+        val handler = Handler()
+        clockThread = object: Runnable {
+            override fun run() {
+                current_time_header.text = SimpleDateFormat("hh:mm a",
+                    Locale.getDefault()).format(Date())
+                handler.postDelayed(clockThread, 60000)
+            }
+        }
+        handler.post(clockThread)
     }
 
 }

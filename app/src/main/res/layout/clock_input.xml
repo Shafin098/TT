@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/clock_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start time"
+        android:textSize="24sp"
+        android:fontFamily="@font/montserrat_bold"
+        android:textColor="@color/text"
+        android:layout_marginBottom="15dp"/>
+    <TimePicker
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:headerBackground="@color/colorPrimary"
+        android:background="@drawable/rounded_gray"
+        android:timePickerMode="spinner"
+        android:numbersTextColor="@color/colorPrimary" />
+</LinearLayout>
