@@ -9,8 +9,10 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_add_class.*
 import kotlinx.android.synthetic.main.clock_input.*
 import android.util.Log
+import android.widget.TimePicker
 import com.google.gson.Gson
 import java.io.BufferedReader
+import java.sql.Time
 
 
 class AddClass : AppCompatActivity() {
@@ -98,14 +100,15 @@ class AddClass : AppCompatActivity() {
                 Toast.makeText(this, "Type subject's name", Toast.LENGTH_LONG).show()
             }
         } else if (inputStage == 2) {
-            startHour = time_picker.hour.toString()
-            startMinute = time_picker.minute.toString()
+            val timePicker = findViewById<TimePicker>(R.id.time_picker)
+            startHour = timePicker.hour.toString()
+            startMinute = timePicker.minute.toString()
             if (startHour.toInt() >= 12) {
                 startAmOrPm = "pm"
             } else {
                 startAmOrPm = "am"
             }
-            startMinute = time_picker.minute.toString()
+            startMinute = timePicker.minute.toString()
 
             inputStage++
             outer_container.removeAllViews()
@@ -114,8 +117,9 @@ class AddClass : AppCompatActivity() {
             layoutInflater.inflate(R.layout.clock_input, outer_container)
             findViewById<TextView>(R.id.clock_text).setText("Ending time")
         } else if (inputStage == 3){
-            endHour = time_picker.hour.toString()
-            endMinute = time_picker.minute.toString()
+            val timePicker = findViewById<TimePicker>(R.id.time_picker)
+            endHour = timePicker.hour.toString()
+            endMinute = timePicker.minute.toString()
             if (startHour.toInt() == endHour.toInt()) {
                 if (startMinute.toInt() > endMinute.toInt()) {
                     Toast.makeText(this, "Invalid time", Toast.LENGTH_LONG).show()
@@ -125,7 +129,7 @@ class AddClass : AppCompatActivity() {
                     } else {
                         endAmOrPm = "am"
                     }
-                    endMinute = time_picker.minute.toString()
+                    endMinute = timePicker.minute.toString()
                     val classMap = createClassHashMap()
                     Log.d("input", classMap.toString())
                     finish()
@@ -133,12 +137,13 @@ class AddClass : AppCompatActivity() {
             } else if (endHour.toInt() < startHour.toInt()) {
                 Toast.makeText(this, "Invalid time", Toast.LENGTH_LONG).show()
             } else {
+                val timePicker = findViewById<TimePicker>(R.id.time_picker)
                 if (endHour.toInt() >= 12) {
                     endAmOrPm = "pm"
                 } else {
                     endAmOrPm = "am"
                 }
-                endMinute = time_picker.minute.toString()
+                endMinute = timePicker.minute.toString()
                 val classMap = createClassHashMap()
                 Log.d("input", classMap.toString())
                 finish()
