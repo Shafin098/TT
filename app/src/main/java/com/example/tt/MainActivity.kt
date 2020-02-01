@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         // updates class cards in horizontal scroll
         updateViews()
+        checkAndUpdateClass()
     }
 
     private fun jsonDataFileExists(): Boolean {
@@ -123,11 +124,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getSchedule(): Schedule {
-        val scheduleDataFile = openFileInput(JSON_FILE_NAME).bufferedReader()
-        // extracting all Strings from json data file
-        val jsonDataString = scheduleDataFile.use(BufferedReader::readText)
-        val schedule = Gson().fromJson(jsonDataString, Schedule::class.java)
-        return schedule
+        if (File(filesDir, JSON_FILE_NAME).exists()) {
+            val scheduleDataFile = openFileInput(JSON_FILE_NAME).bufferedReader()
+            // extracting all Strings from json data file
+            val jsonDataString = scheduleDataFile.use(BufferedReader::readText)
+            val schedule = Gson().fromJson(jsonDataString, Schedule::class.java)
+            return schedule
+        }
+        return Schedule()
     }
 
     private fun inflateAddClassCard() {
@@ -210,7 +214,11 @@ class MainActivity : AppCompatActivity() {
     private fun checkAndUpdateClass() {
         val currentClass = getCurrentClass()
         if (currentClass["subject"] != NO_CLASS) {
-            if (current_subject_header.text.toString() != currentClass["subject"]) {
+            val currentClassDisplayed =
+                findViewById<TextView>(R.id.current_subject_header).text.toString()
+            val nextClassDisplayed =
+                findViewById<TextView>(R.id.next_subject_header).text.toString()
+            if (currentClassDisplayed != currentClass["subject"] || nextClassDisplayed != nextClass["subject"]) {
                 updateHeaderViews(currentClass)
             }
         }
