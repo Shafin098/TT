@@ -269,12 +269,26 @@ class MainActivity : AppCompatActivity() {
         val currentHour = SimpleDateFormat("H").format(cal.getTime()).toInt()
         val currentMinute = SimpleDateFormat("m").format(cal.getTime()).toInt()
 
-        val startHour = singleClass["startHour"]!!.toInt()
-        val startMinute = singleClass["startMinute"]!!.toInt()
+        val classStartHour = singleClass["startHour"]!!.toInt()
+        val classStartMinute = singleClass["startMinute"]!!.toInt()
         val classEndHour = singleClass["endHour"]!!.toInt()
         val classEndMinute = singleClass["endMinute"]!!.toInt()
-
-        if (currentHour >= startHour && currentHour <= classEndHour) {
+        // TODO start from here
+        if (currentHour >= classStartHour && currentHour <= classEndHour) {
+            if (currentHour == classStartHour) {
+                if (currentMinute >= classStartMinute) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            if (currentHour == classEndHour) {
+                if (currentMinute <= classEndMinute) {
+                    return true
+                } else {
+                    return false
+                }
+            }
             return true
         } else {
             return false
