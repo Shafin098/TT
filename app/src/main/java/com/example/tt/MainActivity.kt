@@ -2,19 +2,19 @@ package com.example.tt
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.widget.TextView
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
-import java.util.*
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
+import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
     private fun anyClassScheduleToday(): Boolean {
         val anyClassToday = if (getSchedule().getAllClasses(daySelected).size > 0) true else false
         return anyClassToday
-
     }
 
     /**
@@ -91,25 +90,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateClassCard(classIndex: Int, schedule: MutableMap<String, String>) {
         classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.subject_card)?.setText(schedule.get("subject"))
+            .findViewById<TextView>(R.id.subject_card)?.setText(schedule["subject"])
         classes_container.getChildAt(classIndex)
             .findViewById<TextView>(R.id.start_card)?.setText(getStartTimeOf(schedule))
         classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.at_card)?.setText(schedule.get("at"))
+            .findViewById<TextView>(R.id.at_card)?.setText(schedule["at"])
         classes_container.getChildAt(classIndex)
             .findViewById<TextView>(R.id.end_card)?.setText(getEndTimeOf(schedule))
         classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.by_card)?.setText(schedule.get("by"))
+            .findViewById<TextView>(R.id.by_card)?.setText(schedule["by"])
     }
 
     private fun getStartTimeOf(singleClass: Map<String, String>): String {
-        val startHour = formatHourToTweleveHour(singleClass.get("startHour")!!, singleClass.get("startAmOrPm")!!)
-        return "${startHour}:${singleClass.get("startMinute")} ${singleClass.get("startAmOrPm")}"
+        val startHour =
+            formatHourToTweleveHour(singleClass["startHour"]!!, singleClass["startAmOrPm"]!!)
+        return "${startHour}:${singleClass["startMinute"]} ${singleClass["startAmOrPm"]}"
     }
 
     private fun getEndTimeOf(singleClass: Map<String, String>): String {
-        val endHour = formatHourToTweleveHour(singleClass.get("endHour")!!, singleClass.get("endAmOrPm")!!)
-        return "${endHour}:${singleClass.get("endMinute")} ${singleClass.get("endAmOrPm")}"
+        val endHour = formatHourToTweleveHour(singleClass["endHour"]!!, singleClass["endAmOrPm"]!!)
+        return "${endHour}:${singleClass["endMinute"]} ${singleClass["endAmOrPm"]}"
     }
 
     private fun formatHourToTweleveHour(hour: String, amOrPm: String): String {
@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addListenerToDaysTv() {
-        val days = listOf<String>("sat", "sun", "mon", "tue", "wed", "thu", "fri")
+        val days = listOf("sat", "sun", "mon", "tue", "wed", "thu", "fri")
         for (day in days) {
             val tv = resources.getIdentifier(day, "id", packageName)
             findViewById<TextView>(tv).setOnClickListener {
@@ -219,33 +219,41 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateHeaderViews(currentClass: Map<String, String>) {
         // TODO add next subject
-        current_subject_header.text = currentClass["subject"]
-        current_class_room_header.text = currentClass["at"]
-        time_remaining_header.text = timeDifference(currentClass)
+        findViewById<TextView>(R.id.current_subject_header).text = currentClass["subject"]
+        findViewById<TextView>(R.id.current_class_room_header).text = currentClass["at"]
+        findViewById<TextView>(R.id.time_remaining_header).text = timeDifference(currentClass)
     }
 
     private fun timeDifference(anyClass: Map<String, String>): String {
+        val cal = Calendar.getInstance()
         var hourDifference = 0
-        var minuteDifference = 0
-        val startHour = anyClass["startHour"]
-        val endHour = anyClass["endHour"]
+        var minuteDifference = 1
 
-        if (startHour == endHour) {
-            minuteDifference = anyClass["startMinute"]!!.toInt() - anyClass["startMinute"]!!.toInt()
-        } else {
-            hourDifference = startHour!!.toInt() - endHour!!.toInt()
-            minuteDifference = anyClass["startMinute"]!!.toInt() - anyClass["startMinute"]!!.toInt()
+        val endHour = anyClass["endHour"]!!.toInt()
+        val endMinute = anyClass["endMinute"]!!.toInt()
+
+        var currentHour = SimpleDateFormat("H").format(cal.getTime()).toInt()
+        var currentMinute = SimpleDateFormat("m").format(cal.getTime()).toInt()
+
+        while (currentMinute < endMinute || currentHour < endHour) {
+            currentMinute++
+            if (currentMinute % 60 == 0) {
+                currentHour++
+                currentMinute = 0
+            }
+            minuteDifference++
         }
-
-        if (hourDifference == 0) {
-            return "${minuteDifference} minutes left"
+        minuteDifference--
+        hourDifference = minuteDifference / 60
+        minuteDifference = minuteDifference - (hourDifference * 60)
+        if (hourDifference > 0) {
+            return "${hourDifference} hour ${minuteDifference} minute"
         } else {
-            return "${hourDifference} hours ${minuteDifference} minutes left"
+            return "${minuteDifference} minute"
         }
     }
 
     private fun getCurrentClass(): Map<String,String> {
-        // TODO start from here
         val allClasses = getSchedule().getAllClasses(daySelected)
         for (singleClass in allClasses) {
             if(isCurrentTimeBetweenClassTime(singleClass)) {
@@ -257,18 +265,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isCurrentTimeBetweenClassTime(singleClass: Map<String, String>): Boolean {
-        val currentTime = Calendar.getInstance().time
-        val timeFormatter = SimpleDateFormat("h:m a")
-        val classStart = timeFormatter.parse(getStartTimeOf(singleClass))
-        val classEnd = timeFormatter.parse(getEndTimeOf(singleClass))
-        if (currentTime.equals(classStart)) {
-            return true
-        } else if (currentTime.after(classStart) && currentTime.before(classEnd)) {
+        val cal = Calendar.getInstance()
+        val currentHour = SimpleDateFormat("H").format(cal.getTime()).toInt()
+        val currentMinute = SimpleDateFormat("m").format(cal.getTime()).toInt()
+
+        val startHour = singleClass["startHour"]!!.toInt()
+        val startMinute = singleClass["startMinute"]!!.toInt()
+        val classEndHour = singleClass["endHour"]!!.toInt()
+        val classEndMinute = singleClass["endMinute"]!!.toInt()
+
+        if (currentHour >= startHour && currentHour <= classEndHour) {
             return true
         } else {
             return false
         }
-
     }
 
 }
