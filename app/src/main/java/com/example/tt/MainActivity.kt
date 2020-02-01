@@ -10,7 +10,6 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.class_card_add.*
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 import android.view.View
 import com.google.gson.Gson
@@ -20,23 +19,21 @@ import java.io.BufferedReader
 class MainActivity : AppCompatActivity() {
 
     // don't change file name
-    // duplicate on AddClass.kt
+    // because duplicate on AddClass.kt
     private val JSON_FILE_NAME = "schedule_data.json"
-    private lateinit var  clockThread: Runnable
+    private lateinit var  updatViewsThread: Runnable
     private lateinit var daySelected: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        startClock()
+        classChangeListener()
         setTodaysDay()
         addListenerToDaysTv()
 
-        val scheduleFileList = fileList().filter { it == JSON_FILE_NAME  }
-        if (scheduleFileList.isNotEmpty()) {
+        if (jsonDataFileExists() && anyClassScheduleToday()) {
             // schedule file exists show data
-            layoutInflater.inflate(R.layout.class_card, classes_container)
             // open's json data file reads
             // and updates all views that gets data from schedu;e class
             updateViews()
@@ -60,26 +57,71 @@ class MainActivity : AppCompatActivity() {
         inflateAddClassCard()
     }
 
-    // will update all views which gets data from Schedule class
-    // will re create class cards and notes
+    override fun onResume() {
+        super.onResume()
+        checkAndUpdateClass()
+        Toast.makeText(this, "resumed", Toast.LENGTH_LONG).show()
+    }
+
+    private fun jsonDataFileExists(): Boolean {
+        val scheduleFileList = fileList().filter { it == JSON_FILE_NAME  }
+        return scheduleFileList.isNotEmpty()
+    }
+
+    private fun anyClassScheduleToday(): Boolean {
+        val anyClassToday = if (getSchedule().getAllClasses(daySelected).size > 0) true else false
+        return anyClassToday
+
+    }
+
+    /**
+     * Update all views which gets data from Schedule class
+     * Recreate class cards and notes
+     */
     private fun updateViews() {
         classes_container.removeAllViews()
 
         val schedule: Schedule = getSchedule()
+        var currentClassIndex = 0
         for (singleClass in schedule.getAllClasses(daySelected)) {
-            val classCardView = layoutInflater.inflate(R.layout.class_card, classes_container)
-            updateClassCard(classCardView, singleClass)
+            layoutInflater.inflate(R.layout.class_card, classes_container)
+            updateClassCard(currentClassIndex, singleClass)
+            currentClassIndex++
         }
     }
 
-    private fun updateClassCard(classCardView: View?, schedule: MutableMap<String, String>) {
-        classCardView?.findViewById<TextView>(R.id.subject_card)?.setText(schedule.get("subject"))
-        // TODO reformat start time
-        classCardView?.findViewById<TextView>(R.id.start_card)?.setText(schedule.get("startHour"))
-        classCardView?.findViewById<TextView>(R.id.at_card)?.setText(schedule.get("at"))
-        // TODO reformat end time
-        classCardView?.findViewById<TextView>(R.id.end_card)?.setText(schedule.get("endHour"))
-        classCardView?.findViewById<TextView>(R.id.by_card)?.setText(schedule.get("by"))
+    private fun updateClassCard(classIndex: Int, schedule: MutableMap<String, String>) {
+        classes_container.getChildAt(classIndex)
+            .findViewById<TextView>(R.id.subject_card)?.setText(schedule.get("subject"))
+        classes_container.getChildAt(classIndex)
+            .findViewById<TextView>(R.id.start_card)?.setText(getStartTime(schedule))
+        classes_container.getChildAt(classIndex)
+            .findViewById<TextView>(R.id.at_card)?.setText(schedule.get("at"))
+        classes_container.getChildAt(classIndex)
+            .findViewById<TextView>(R.id.end_card)?.setText(getEndTime(schedule))
+        classes_container.getChildAt(classIndex)
+            .findViewById<TextView>(R.id.by_card)?.setText(schedule.get("by"))
+    }
+
+    private fun getStartTime(schedule: MutableMap<String, String>): String {
+        val startHour = formatHourToTweleveHour(schedule.get("startHour")!!, schedule.get("startAmOrPm")!!)
+        return "${startHour}:${schedule.get("startMinute")} ${schedule.get("startAmOrPm")}"
+    }
+
+    private fun formatHourToTweleveHour(hour: String, amOrPm: String): String {
+        var formattedHour = hour
+        if (amOrPm == "pm") {
+            formattedHour = (hour.toInt() - 12).toString()
+        }
+        if (amOrPm == "am" && hour == "0") {
+            formattedHour = "12"
+        }
+        return  formattedHour
+    }
+
+    private fun getEndTime(schedule: MutableMap<String, String>): String {
+        val endHour = formatHourToTweleveHour(schedule.get("endHour")!!, schedule.get("endAmOrPm")!!)
+        return "${endHour}:${schedule.get("endMinute")} ${schedule.get("endAmOrPm")}"
     }
 
     private fun getSchedule(): Schedule {
@@ -91,8 +133,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun inflateAddClassCard() {
-        layoutInflater.inflate(R.layout.class_card_add, classes_container)
-        add_class_card.setOnClickListener {
+       layoutInflater.inflate(R.layout.class_card_add, classes_container)
+        add_class_btn_card.setOnClickListener {
             val intent = Intent(this, AddClass::class.java)
             intent.putExtra("day", daySelected)
             startActivity(intent)
@@ -101,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setTodaysDay() {
         val calendar = Calendar.getInstance(TimeZone.getDefault())
-        var todaysDay = calendar.get(Calendar.DAY_OF_WEEK)
+        val todaysDay = calendar.get(Calendar.DAY_OF_WEEK)
         daySelected = when (todaysDay) {
             Calendar.SATURDAY -> "sat"
             Calendar.SUNDAY -> "sun"
@@ -125,7 +167,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onDaySelected(dayView: View?) {
-        val days = listOf<String>("sat", "sun", "mon", "tue", "wed", "thu", "fri")
+        val days = listOf("sat", "sun", "mon", "tue", "wed", "thu", "fri")
         val dayTextView = dayView as TextView?
         for (day in days) {
             if (day == dayTextView?.text.toString()) {
@@ -149,17 +191,36 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(textViewId).setTextColor(resources.getColor(R.color.text, theme))
     }
 
-    private fun startClock() {
-        // updating current_time_header TextView to current time every minutes
+    /**
+     * Checks if current class changed every 15 seconds
+     * updates all related views if changes
+     */
+    private fun classChangeListener() {
         val handler = Handler()
-        clockThread = object: Runnable {
+        updatViewsThread = object: Runnable {
             override fun run() {
-                current_time_header.text = SimpleDateFormat("hh:mm a",
-                    Locale.getDefault()).format(Date())
-                handler.postDelayed(clockThread, 15000)
+                checkAndUpdateClass()
+                handler.postDelayed(updatViewsThread, 15000)
             }
         }
-        handler.post(clockThread)
+        handler.post(updatViewsThread)
+    }
+
+    private fun checkAndUpdateClass() {
+        val currentClass = getCurrentClass()
+        if (current_subject_header.text.toString() != currentClass) {
+            updateHeaderViews(currentClass)
+        }
+    }
+
+    private fun updateHeaderViews(currentClass: String) {
+        // TODO
+        current_subject_header.text = currentClass
+    }
+
+    private fun getCurrentClass(): String {
+        // TODO
+        return "English"
     }
 
 }

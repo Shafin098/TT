@@ -23,7 +23,6 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/start_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="starts "
@@ -31,6 +30,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:fontFamily="@font/montserrat"
             android:textColor="#FFF"/>
         <TextView
+            android:id="@+id/start_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="08:00 am"

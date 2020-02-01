@@ -8,17 +8,40 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/current_time_header"
+        android:id="@+id/current_subject_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
-        android:fontFamily="@font/montserrat"
-        android:text="08:00 AM"
-        android:textColor="@color/text"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Bangla"
+        android:textColor="@color/colorPrimary"
         android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/montserrat"
+        android:text="at "
+        android:textColor="@color/text"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/current_subject_header" />
+
+    <TextView
+        android:id="@+id/current_class_room_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="301"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/current_subject_header" />
 
     <TextView
         android:id="@+id/time_remaining_header"
@@ -30,7 +53,7 @@
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/current_time_header" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
         android:id="@+id/next_subject_header"
@@ -63,7 +86,7 @@
         android:textColor="@color/text"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/time_remaining_header"
-        app:layout_constraintTop_toBottomOf="@+id/current_time_header" />
+        app:layout_constraintTop_toBottomOf="@+id/current_class_room_header" />
 
     <TextView
         android:id="@+id/textView6"
@@ -188,6 +211,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 

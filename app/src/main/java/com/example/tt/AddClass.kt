@@ -47,11 +47,6 @@ class AddClass : AppCompatActivity() {
     }
 
     private fun createClassHashMap(): Map<String,String> {
-//        val scheduleMap = HashMap<String,ArrayList<Map<String,String>>>()
-//        val days = listOf<String>("sat", "sun", "mon", "tue", "wed", "thu", "fri")
-//        for (day in days) {
-//            scheduleMap.put(day, ArrayList<Map<String,String>>())
-//        }
         val classMap = hashMapOf<String,String>(
             "subject" to subject,
             "at" to at,
