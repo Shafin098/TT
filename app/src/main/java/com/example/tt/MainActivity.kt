@@ -25,9 +25,8 @@ class MainActivity : AppCompatActivity() {
     private val JSON_FILE_NAME = "schedule_data.json"
     private lateinit var  updatViewsThread: Runnable
     private lateinit var daySelected: String
-    private var currentClass: Map<String,String> = mapOf(
-        "subject" to NO_CLASS
-    )
+    private var currentClass: Map<String, String> = mapOf("subject" to NO_CLASS)
+    private var nextClass: Map<String, String> = mapOf("subject" to NO_CLASS)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,10 +217,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateHeaderViews(currentClass: Map<String, String>) {
-        // TODO add next subject
         findViewById<TextView>(R.id.current_subject_header).text = currentClass["subject"]
         findViewById<TextView>(R.id.current_class_room_header).text = currentClass["at"]
         findViewById<TextView>(R.id.time_remaining_header).text = timeDifference(currentClass)
+        if (nextClass["subject"] != NO_CLASS) {
+            findViewById<TextView>(R.id.next_subject_header).text = nextClass["subject"]
+            findViewById<TextView>(R.id.next_class_room_header).text = nextClass["at"]
+        }
     }
 
     private fun timeDifference(anyClass: Map<String, String>): String {
@@ -255,9 +257,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun getCurrentClass(): Map<String,String> {
         val allClasses = getSchedule().getAllClasses(daySelected)
-        for (singleClass in allClasses) {
+        for ((index, value) in allClasses.withIndex()) {
+            var singleClass = allClasses[index]
             if(isCurrentTimeBetweenClassTime(singleClass)) {
                 currentClass = singleClass
+                if (allClasses.size - 1 >= index + 1) {
+                    nextClass = allClasses[index + 1]
+                }
                 return singleClass
             }
         }
@@ -273,7 +279,7 @@ class MainActivity : AppCompatActivity() {
         val classStartMinute = singleClass["startMinute"]!!.toInt()
         val classEndHour = singleClass["endHour"]!!.toInt()
         val classEndMinute = singleClass["endMinute"]!!.toInt()
-        // TODO start from here
+
         if (currentHour >= classStartHour && currentHour <= classEndHour) {
             if (currentHour == classStartHour) {
                 if (currentMinute >= classStartMinute) {
