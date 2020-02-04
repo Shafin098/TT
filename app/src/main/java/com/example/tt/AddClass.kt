@@ -1,24 +1,24 @@
 package com.example.tt
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_add_class.*
 import kotlinx.android.synthetic.main.clock_input.*
-import android.util.Log
-import android.widget.TimePicker
-import com.google.gson.Gson
 import java.io.BufferedReader
-import java.sql.Time
 
 
 class AddClass : AppCompatActivity() {
 
     // don't change file name
     // duplicate on MainActivity.kt
+    // duplicate on EditOrDelete.kt
     private val JSON_FILE_NAME = "schedule_data.json"
     // 1 when only subject, room and teacher's name input showing
     // 2 starts time input showing
@@ -49,7 +49,7 @@ class AddClass : AppCompatActivity() {
     }
 
     private fun createClassHashMap(): Map<String,String> {
-        val classMap = hashMapOf<String,String>(
+        val classMap = hashMapOf(
             "subject" to subject,
             "at" to at,
             "by" to by,
@@ -70,7 +70,6 @@ class AddClass : AppCompatActivity() {
         schedule.addNewClass(daySelected, classMap)
         val scheduleDataFile = openFileOutput(JSON_FILE_NAME, Context.MODE_PRIVATE)
         scheduleDataFile.write(Gson().toJson(schedule).toByteArray())
-//            Log.d("json", gson.toJson(schedule))
         scheduleDataFile.close()
     }
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:minWidth="230dp"
-    android:minHeight="160dp"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:layout_marginEnd="20dp"
     android:padding="20dp"
-    android:layout_marginStart="20dp"
+    android:elevation="3dp"
     android:background="@drawable/rounded"
     android:orientation="vertical">
 
@@ -17,7 +17,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         android:fontFamily="@font/montserrat_bold"
         android:text="Bangla"
         android:textColor="#FFF"
-        android:textSize="18sp" />
+        style="@style/textSizeMedium" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,15 +26,15 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="starts "
-            android:textSize="18sp"
             android:fontFamily="@font/montserrat"
-            android:textColor="#FFF"/>
+            android:textColor="#FFF"
+            style="@style/textSizeSmall" />
         <TextView
             android:id="@+id/start_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="08:00 am"
-            android:textSize="18sp"
+            style="@style/textSizeSmall"
             android:fontFamily="@font/montserrat_bold"
             android:textColor="#FFF"/>
     </LinearLayout>
@@ -47,7 +47,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="at "
-            android:textSize="18sp"
+            style="@style/textSizeSmall"
             android:fontFamily="@font/montserrat"
             android:textColor="#FFF"/>
         <TextView
@@ -55,7 +55,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="306"
-            android:textSize="18sp"
+            style="@style/textSizeSmall"
             android:fontFamily="@font/montserrat_bold"
             android:textColor="#FFF"/>
     </LinearLayout>
@@ -68,7 +68,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ends "
-            android:textSize="18sp"
+            style="@style/textSizeSmall"
             android:fontFamily="@font/montserrat"
             android:textColor="#FFF"/>
 
@@ -79,7 +79,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:fontFamily="@font/montserrat_bold"
             android:text="08:45 am"
             android:textColor="#FFF"
-            android:textSize="18sp" />
+            style="@style/textSizeSmall" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -89,7 +89,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="by "
-            android:textSize="18sp"
+            style="@style/textSizeSmall"
             android:fontFamily="@font/montserrat"
             android:textColor="#FFF"/>
 
@@ -100,7 +100,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             android:fontFamily="@font/montserrat_bold"
             android:text="Random Name"
             android:textColor="#FFF"
-            android:textSize="18sp" />
+            style="@style/textSizeSmall" />
     </LinearLayout>
 
 </LinearLayout>

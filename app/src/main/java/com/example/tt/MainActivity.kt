@@ -19,14 +19,17 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val NO_CLASS: String = "__no__class"
+    private val NO_CLASS: String = "______"
     // don't change file name
     // because duplicate on AddClass.kt
+    // duplicate on EditOrDelete.kt
     private val JSON_FILE_NAME = "schedule_data.json"
     private lateinit var  updatViewsThread: Runnable
     private lateinit var daySelected: String
-    private var currentClass: Map<String, String> = mapOf("subject" to NO_CLASS)
-    private var nextClass: Map<String, String> = mapOf("subject" to NO_CLASS)
+
+    private var currentClass: Map<String, String> = getDummyClassMap()
+
+    private var nextClass: Map<String, String> = getDummyClassMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +39,12 @@ class MainActivity : AppCompatActivity() {
         setTodaysDay()
         addListenerToDaysTv()
 
-        if (jsonDataFileExists() && anyClassScheduleToday()) {
+        if (jsonDataFileExists()) {
             // schedule file exists show data
             // open's json data file reads
             // and updates all views that gets data from schedule class
             checkAndUpdateClass()
-            updateViews()
+            addClasssesToHorizontalScroll()
         } else {
             // app first opened
             // schedule file doesn't exits create new fle
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // updates class cards in horizontal scroll
-        updateViews()
+        addClasssesToHorizontalScroll()
         checkAndUpdateClass()
     }
 
@@ -66,16 +69,11 @@ class MainActivity : AppCompatActivity() {
         return scheduleFileList.isNotEmpty()
     }
 
-    private fun anyClassScheduleToday(): Boolean {
-        val anyClassToday = if (getSchedule().getAllClasses(daySelected).size > 0) true else false
-        return anyClassToday
-    }
-
     /**
      * Update all views which gets data from Schedule class
      * Recreate class cards and notes
      */
-    private fun updateViews() {
+    private fun addClasssesToHorizontalScroll() {
         classes_container.removeAllViews()
 
         val schedule: Schedule = getSchedule()
@@ -88,37 +86,62 @@ class MainActivity : AppCompatActivity() {
         inflateAddClassCard()
     }
 
-    private fun updateClassCard(classIndex: Int, schedule: MutableMap<String, String>) {
-        classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.subject_card)?.setText(schedule["subject"])
-        classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.start_card)?.setText(getStartTimeOf(schedule))
-        classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.at_card)?.setText(schedule["at"])
-        classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.end_card)?.setText(getEndTimeOf(schedule))
-        classes_container.getChildAt(classIndex)
-            .findViewById<TextView>(R.id.by_card)?.setText(schedule["by"])
+    /**
+     * Updates all text in class card
+     * and sets onClickListener for EditOrDelete activity
+     */
+    private fun updateClassCard(classIndex: Int, singleClass: MutableMap<String, String>) {
+        val classCard = classes_container.getChildAt(classIndex)
+        classCard
+            .findViewById<TextView>(R.id.subject_card)?.setText(singleClass["subject"])
+        classCard
+            .findViewById<TextView>(R.id.start_card)?.setText(getStartTimeOf(singleClass))
+        classCard
+            .findViewById<TextView>(R.id.at_card)?.setText(singleClass["at"])
+        classCard
+            .findViewById<TextView>(R.id.end_card)?.setText(getEndTimeOf(singleClass))
+        classCard
+            .findViewById<TextView>(R.id.by_card)?.setText(singleClass["by"])
+
+        classCard.setOnClickListener {
+            val editOrDelIntent = Intent(this, EditOrDeleteClass::class.java)
+            editOrDelIntent.putExtra("day", daySelected)
+            for ((key,value) in singleClass) {
+                editOrDelIntent.putExtra(key, value)
+            }
+            startActivity(editOrDelIntent)
+        }
     }
 
     private fun getStartTimeOf(singleClass: Map<String, String>): String {
         val startHour =
             formatHourToTweleveHour(singleClass["startHour"]!!, singleClass["startAmOrPm"]!!)
-        return "${startHour}:${singleClass["startMinute"]} ${singleClass["startAmOrPm"]}"
+        var startMinute = singleClass["startMinute"]
+        if (startMinute!!.toInt() <= 9) {
+            startMinute = "0${startMinute}"
+        }
+        return "${startHour}:${startMinute} ${singleClass["startAmOrPm"]}"
     }
 
     private fun getEndTimeOf(singleClass: Map<String, String>): String {
         val endHour = formatHourToTweleveHour(singleClass["endHour"]!!, singleClass["endAmOrPm"]!!)
-        return "${endHour}:${singleClass["endMinute"]} ${singleClass["endAmOrPm"]}"
+        var endMinute = singleClass["endMinute"]
+        if (endMinute!!.toInt() <= 9) {
+            endMinute = "0${endMinute}"
+        }
+        return "${endHour}:${endMinute} ${singleClass["endAmOrPm"]}"
     }
 
     private fun formatHourToTweleveHour(hour: String, amOrPm: String): String {
         var formattedHour = hour
-        if (amOrPm == "pm") {
+        if (amOrPm == "pm" && hour.toInt() > 12) {
             formattedHour = (hour.toInt() - 12).toString()
         }
         if (amOrPm == "am" && hour == "0") {
             formattedHour = "12"
+        }
+        if (formattedHour.toInt() <= 9) {
+            formattedHour = "0${formattedHour}"
         }
         return  formattedHour
     }
@@ -144,9 +167,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTodaysDay() {
+        daySelected = getTodaysDay()
+        selectDay(daySelected)
+    }
+
+    private fun getTodaysDay(): String {
         val calendar = Calendar.getInstance(TimeZone.getDefault())
         val todaysDay = calendar.get(Calendar.DAY_OF_WEEK)
-        daySelected = when (todaysDay) {
+        return when (todaysDay) {
             Calendar.SATURDAY -> "sat"
             Calendar.SUNDAY -> "sun"
             Calendar.MONDAY -> "mon"
@@ -155,9 +183,7 @@ class MainActivity : AppCompatActivity() {
             Calendar.THURSDAY -> "thu"
             else -> "fri"
         }
-        selectDay(daySelected)
     }
-
     private fun addListenerToDaysTv() {
         val days = listOf("sat", "sun", "mon", "tue", "wed", "thu", "fri")
         for (day in days) {
@@ -180,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         }
         // gets classes on selected day
         // and updates all cards horizontal scroll
-        updateViews()
+        addClasssesToHorizontalScroll()
     }
 
     private fun selectDay(day: String) {
@@ -213,14 +239,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAndUpdateClass() {
         val currentClass = getCurrentClass()
-        if (currentClass["subject"] != NO_CLASS) {
-            val currentClassDisplayed =
-                findViewById<TextView>(R.id.current_subject_header).text.toString()
-            val nextClassDisplayed =
-                findViewById<TextView>(R.id.next_subject_header).text.toString()
-            if (currentClassDisplayed != currentClass["subject"] || nextClassDisplayed != nextClass["subject"]) {
-                updateHeaderViews(currentClass)
-            }
+        val currentClassDisplayed =
+            findViewById<TextView>(R.id.current_subject_header).text.toString()
+        val nextClassDisplayed =
+            findViewById<TextView>(R.id.next_subject_header).text.toString()
+
+
+        if (currentClassDisplayed != currentClass["subject"] || nextClassDisplayed != nextClass["subject"]) {
+            updateHeaderViews(currentClass)
         }
     }
 
@@ -228,13 +254,17 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.current_subject_header).text = currentClass["subject"]
         findViewById<TextView>(R.id.current_class_room_header).text = currentClass["at"]
         findViewById<TextView>(R.id.time_remaining_header).text = timeDifference(currentClass)
-        if (nextClass["subject"] != NO_CLASS) {
-            findViewById<TextView>(R.id.next_subject_header).text = nextClass["subject"]
-            findViewById<TextView>(R.id.next_class_room_header).text = nextClass["at"]
-        }
+
+        findViewById<TextView>(R.id.next_subject_header).text = nextClass["subject"]
+        findViewById<TextView>(R.id.next_class_room_header).text = nextClass["at"]
+
     }
 
     private fun timeDifference(anyClass: Map<String, String>): String {
+        if (anyClass["subject"] == NO_CLASS) {
+            return "${NO_CLASS}  ${NO_CLASS} "
+        }
+
         val cal = Calendar.getInstance()
         var hourDifference = 0
         var minuteDifference = 1
@@ -263,19 +293,60 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Returns current class
+     * and updates next class if class exists
+     */
     private fun getCurrentClass(): Map<String,String> {
-        val allClasses = getSchedule().getAllClasses(daySelected)
+        val allClasses = getSchedule().getAllClasses(getTodaysDay())
         for ((index, value) in allClasses.withIndex()) {
             var singleClass = allClasses[index]
             if(isCurrentTimeBetweenClassTime(singleClass)) {
                 currentClass = singleClass
                 if (allClasses.size - 1 >= index + 1) {
                     nextClass = allClasses[index + 1]
+                } else {
+                    nextClass = getDummyClassMap()
                 }
                 return singleClass
+            } else {
+                nextClass = getNextAvailableClass()
             }
         }
-        return mapOf("subject" to NO_CLASS)
+        return getDummyClassMap()
+    }
+
+    private fun getNextAvailableClass(): Map<String, String> {
+        val cal = Calendar.getInstance()
+        val currentHour = SimpleDateFormat("H").format(cal.getTime()).toInt()
+        val currentMinute = SimpleDateFormat("m").format(cal.getTime()).toInt()
+
+        val allClasses = getSchedule().getAllClasses(getTodaysDay())
+        for (singleClass in allClasses) {
+            val classStartHour = singleClass["startHour"]!!.toInt()
+            val classStartMinute = singleClass["startMinute"]!!.toInt()
+            if (classStartHour > currentHour) {
+                return  singleClass
+            } else if (classStartHour == currentHour) {
+                if (classStartMinute > currentMinute) {
+                    return singleClass
+                }
+            }
+        }
+        return getDummyClassMap()
+    }
+
+    private fun getDummyClassMap(): Map<String, String> {
+        return hashMapOf(
+            "subject" to NO_CLASS,
+            "at" to NO_CLASS,
+            "by" to NO_CLASS,
+            "startHour" to NO_CLASS,
+            "startMinute" to NO_CLASS,
+            "startAmOrPm" to NO_CLASS,
+            "endHour" to NO_CLASS,
+            "endMinute" to NO_CLASS,
+            "endAmOrPm" to NO_CLASS)
     }
 
     private fun isCurrentTimeBetweenClassTime(singleClass: Map<String, String>): Boolean {
@@ -290,7 +361,7 @@ class MainActivity : AppCompatActivity() {
 
         if (currentHour >= classStartHour && currentHour <= classEndHour) {
             if (currentHour == classStartHour) {
-                if (currentMinute >= classStartMinute) {
+                if (currentMinute >= classStartMinute && currentMinute <= classEndMinute) {
                     return true
                 } else {
                     return false

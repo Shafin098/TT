@@ -40,6 +40,32 @@ public class Schedule {
         }
     }
 
+    public void deleteClass(String day, Map<String,String> classMap) {
+        if (day.equals("sat")) {
+            sat.remove(classMap);
+            sortClassesByStartTime(sat);
+        } else if (day.equals("sun")) {
+            sun.remove(classMap);
+            sortClassesByStartTime(sun);
+        } else if (day.equals("mon")) {
+            mon.remove(classMap);
+            sortClassesByStartTime(mon);
+        } else if (day.equals("tue")) {
+            tue.remove(classMap);
+            sortClassesByStartTime(tue);
+        } else if (day.equals("wed")) {
+            wed.remove(classMap);
+            sortClassesByStartTime(wed);
+        } else if (day.equals("thu")) {
+            thu.remove(classMap);
+            sortClassesByStartTime(thu);
+        } else if (day.equals("fri")){
+            fri.remove(classMap);
+            sortClassesByStartTime(fri);
+        }
+    }
+
+
     private void sortClassesByStartTime(ArrayList<Map<String, String>> classes) {
         for (int iteration = classes.size()-1; iteration > 0; iteration--) {
             for (int i = 0; i < iteration; i++) {
