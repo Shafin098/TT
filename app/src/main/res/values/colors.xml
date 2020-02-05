@@ -7,5 +7,7 @@
     <color name="colorAccent">#EEEEEE</color>
 
     <color name="text">#111111</color>
-    <color name="red">#DB2C2C</color>
+
+    <color name="redLight">#DB2C2C</color>
+    <color name="red">#FF3636</color>
 </resources>

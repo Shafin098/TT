@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".EditOrDeleteClass"
     android:clipToPadding="false">
 
@@ -14,7 +15,6 @@
         android:layout_marginTop="45dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded"
-        android:elevation="3dp"
         android:orientation="vertical"
         android:padding="25sp"
         app:layout_constraintEnd_toEndOf="parent"

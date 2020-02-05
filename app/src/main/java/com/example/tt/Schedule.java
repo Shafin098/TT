@@ -3,6 +3,7 @@ package com.example.tt;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Schedule {
@@ -65,6 +66,33 @@ public class Schedule {
         }
     }
 
+    public void editClass(String day, Map<String,String> classToUpdate, Map<String,String> updatedClass) {
+        List<Map<String,String>> allClasses = getAllClasses(day);
+        for (int i=0; i<allClasses.size(); i++) {
+            if (allClasses.get(i).equals(classToUpdate)) {
+                updateClass(day, i, updatedClass);
+                break;
+            }
+        }
+    }
+
+    private void updateClass(String day, int i, Map<String, String> updatedClass) {
+        if (day.equals("sat")) {
+            sat.set(i, updatedClass);
+        } else if (day.equals("sun")) {
+            sun.set(i, updatedClass);
+        } else if (day.equals("mon")) {
+            mon.set(i, updatedClass);
+        } else if (day.equals("tue")) {
+            tue.set(i, updatedClass);
+        } else if (day.equals("wed")) {
+            wed.set(i, updatedClass);
+        } else if (day.equals("thu")) {
+            thu.set(i, updatedClass);
+        } else if (day.equals("fri")){
+            fri.set(i, updatedClass);
+        }
+    }
 
     private void sortClassesByStartTime(ArrayList<Map<String, String>> classes) {
         for (int iteration = classes.size()-1; iteration > 0; iteration--) {

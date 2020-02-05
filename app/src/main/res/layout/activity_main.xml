@@ -10,16 +10,18 @@
 
     <TextView
         android:id="@+id/current_subject_header"
-        android:layout_width="wrap_content"
+        style="@style/textSizeLargest"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="______"
         android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/textSizeLargest" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
@@ -31,7 +33,7 @@
         android:textColor="@color/text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/current_subject_header"
-        style="@style/textSizeLarge" />
+        style="@style/textSizeMedium" />
 
     <TextView
         android:id="@+id/current_class_room_header"
@@ -42,11 +44,11 @@
         android:textColor="@color/colorPrimary"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/current_subject_header"
-        style="@style/textSizeLarge"/>
+        style="@style/textSizeMedium"/>
 
     <TextView
         android:id="@+id/time_remaining_header"
-        style="@style/textSizeLarge"
+        style="@style/textSizeMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -56,31 +58,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/current_class_room_header" />
 
-    <TextView
-        android:id="@+id/next_subject_header"
-        style="@style/textSizeLarge"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/next_subject_scroll_header"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="_______"
-        android:textColor="@color/colorPrimary"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/time_remaining_header" />
+        app:layout_constraintTop_toBottomOf="@+id/time_remaining_header">
+
+        <TextView
+            android:id="@+id/next_subject_header"
+            style="@style/textSizeLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="_______"
+            android:textColor="@color/colorPrimary"
+            tools:layout_editor_absoluteX="299dp"
+            tools:layout_editor_absoluteY="127dp" />
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/next_class_room_header"
-        style="@style/textSizeLarge"
+        style="@style/textSizeSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat_bold"
         android:text="___"
         android:textColor="@color/colorPrimary"
         app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/next_subject_header" />
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <TextView
         android:id="@+id/textView3"
-        style="@style/textSizeLarge"
+        style="@style/textSizeMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat_bold"
@@ -103,15 +115,15 @@
 
     <TextView
         android:id="@+id/textView7"
-        style="@style/textSizeLarge"
+        style="@style/textSizeSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="18dp"
         android:fontFamily="@font/montserrat_bold"
         android:text=" at "
         android:textColor="@color/text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/next_subject_header" />
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"

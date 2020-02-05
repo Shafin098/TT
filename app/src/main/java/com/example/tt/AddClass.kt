@@ -43,9 +43,7 @@ class AddClass : AppCompatActivity() {
 
         daySelected = intent.getStringExtra("day").toString()
 
-        next_btn.setOnClickListener { onInputSubmit(it) }
-        //debug remove later
-        Toast.makeText(this, daySelected, Toast.LENGTH_LONG).show()
+        edit_done_btn.setOnClickListener { onInputSubmit(it) }
     }
 
     private fun createClassHashMap(): Map<String,String> {
@@ -111,7 +109,7 @@ class AddClass : AppCompatActivity() {
 
             inputStage++
             outer_container.removeAllViews()
-            next_btn.text = "create new class"
+            edit_done_btn.text = "create new class"
             // adding time picker to views
             layoutInflater.inflate(R.layout.clock_input, outer_container)
             findViewById<TextView>(R.id.clock_text).setText("Ending time")

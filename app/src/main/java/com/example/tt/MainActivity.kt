@@ -19,7 +19,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val NO_CLASS: String = "______"
+    private val NO_CLASS: String = "No class available"
     // don't change file name
     // because duplicate on AddClass.kt
     // duplicate on EditOrDelete.kt
@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun timeDifference(anyClass: Map<String, String>): String {
         if (anyClass["subject"] == NO_CLASS) {
-            return "${NO_CLASS}  ${NO_CLASS} "
+            return "0 hour 0 minute"
         }
 
         val cal = Calendar.getInstance()
@@ -339,8 +339,8 @@ class MainActivity : AppCompatActivity() {
     private fun getDummyClassMap(): Map<String, String> {
         return hashMapOf(
             "subject" to NO_CLASS,
-            "at" to NO_CLASS,
-            "by" to NO_CLASS,
+            "at" to "not known",
+            "by" to "not known",
             "startHour" to NO_CLASS,
             "startMinute" to NO_CLASS,
             "startAmOrPm" to NO_CLASS,
@@ -360,13 +360,23 @@ class MainActivity : AppCompatActivity() {
         val classEndMinute = singleClass["endMinute"]!!.toInt()
 
         if (currentHour >= classStartHour && currentHour <= classEndHour) {
-            if (currentHour == classStartHour) {
+            // class starts and ends at same hour
+            if (currentHour == classStartHour && currentHour == classEndHour) {
                 if (currentMinute >= classStartMinute && currentMinute <= classEndMinute) {
                     return true
                 } else {
                     return false
                 }
             }
+            // class starts and end at different hour and current hour is class start hour
+            if (currentHour == classStartHour) {
+                if (currentMinute >= classStartMinute) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            // class starts and end at different hour and current hour is class end hour
             if (currentHour == classEndHour) {
                 if (currentMinute <= classEndMinute) {
                     return true
