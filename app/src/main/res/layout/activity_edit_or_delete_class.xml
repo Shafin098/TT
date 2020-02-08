@@ -9,6 +9,7 @@
     android:clipToPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -23,100 +24,100 @@
 
         <TextView
             android:id="@+id/subject_edit_or_delete"
+            style="@style/textSizeLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="Bangla"
             android:textColor="#FFFFFF"
-            style="@style/textSizeLarge"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView8"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:text="at "
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/subject_edit_or_delete" />
 
         <TextView
             android:id="@+id/at_edit_or_delete"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="305"
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toEndOf="@+id/textView8"
             app:layout_constraintTop_toBottomOf="@+id/subject_edit_or_delete" />
 
         <TextView
             android:id="@+id/textView9"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:text="by "
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/at_edit_or_delete" />
 
         <TextView
             android:id="@+id/by_edit_or_delete"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="Random name"
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toEndOf="@+id/textView9"
             app:layout_constraintTop_toBottomOf="@+id/at_edit_or_delete" />
 
         <TextView
             android:id="@+id/textView10"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:text="from "
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/by_edit_or_delete" />
 
         <TextView
             android:id="@+id/start_time_edit_or_delete"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="08:00 am"
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toEndOf="@+id/textView10"
             app:layout_constraintTop_toBottomOf="@+id/by_edit_or_delete" />
 
         <TextView
             android:id="@+id/textView11"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:text=" to "
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toEndOf="@+id/start_time_edit_or_delete"
             app:layout_constraintTop_toTopOf="@+id/start_time_edit_or_delete" />
 
         <TextView
             android:id="@+id/end_time_edit_or_delete"
+            style="@style/textSizeMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="08:40 am"
             android:textColor="#FFFFFF"
-            style="@style/textSizeMedium"
             app:layout_constraintStart_toEndOf="@+id/textView11"
             app:layout_constraintTop_toTopOf="@+id/start_time_edit_or_delete" />
 

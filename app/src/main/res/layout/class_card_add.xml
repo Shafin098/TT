@@ -16,8 +16,8 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded"
         android:fontFamily="@font/montserrat_bold"
-        android:text="Add"
+        android:text="+"
         android:textColor="#FFF"
-        android:textSize="14sp" />
+        android:textSize="26sp" />
 
 </LinearLayout>

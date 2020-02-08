@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.note_layout.view.*
 import java.io.BufferedReader
 import java.io.File
 import java.text.SimpleDateFormat
@@ -19,6 +21,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val NOTES_FILE_NAME: String = "notes.json"
+    private var afterOnCreate: Boolean = true
     private val NO_CLASS: String = "No class available"
     // don't change file name
     // because duplicate on AddClass.kt
@@ -55,13 +59,74 @@ class MainActivity : AppCompatActivity() {
             scheduleDataFile.write(gson.toJson(schedule).toByteArray())
             scheduleDataFile.close()
         }
+        create_note_btn.setOnClickListener {
+            startActivity(Intent(this, CreateNote::class.java))
+        }
+    }
+
+    private fun showNotesIfAvailable() {
+        notes_container.removeAllViews()
+        if (notesDataFileExist()) {
+            val notes: Notes = getNotesObject()
+            if (notes.exists()) {
+                addNotesToLayout(notes)
+            }
+        }
+    }
+
+    private fun addNotesToLayout(notes: Notes) {
+        var index = 0;
+        val notesList = notes.getAll()
+        for (note in notesList) {
+            layoutInflater.inflate(R.layout.note_layout, notes_container)
+            val currentlyAddedNote = findViewById<LinearLayout>(R.id.notes_container).getChildAt(index)
+            currentlyAddedNote.note_text.text = note["content"]
+            currentlyAddedNote.setOnLongClickListener {
+                deleteNoteFromStorage(note["content"]!!)
+                // after deleting need remove view
+                // so re-rendering whole note container
+                showNotesIfAvailable()
+                true
+            }
+            index++
+        }
+    }
+
+    private fun deleteNoteFromStorage(noteContent: String) {
+        val notes = getNotesObject()
+        notes.deleteNote(noteContent)
+        writeNoteObjectToStorage(notes)
+    }
+
+    private fun writeNoteObjectToStorage(notes: Notes) {
+        val gson = Gson()
+        val notesDataFile = openFileOutput(NOTES_FILE_NAME, Context.MODE_PRIVATE)
+        notesDataFile.write(gson.toJson(notes).toByteArray())
+        notesDataFile.close()
+    }
+
+    private fun getNotesObject(): Notes {
+        val scheduleDataFile = openFileInput(NOTES_FILE_NAME).bufferedReader()
+        // extracting all Strings from json data file
+        val jsonDataString = scheduleDataFile.use(BufferedReader::readText)
+        val notes = Gson().fromJson(jsonDataString, Notes::class.java)
+        return notes
+    }
+
+    private fun notesDataFileExist(): Boolean {
+        val scheduleFileList = fileList().filter { it == NOTES_FILE_NAME  }
+        return scheduleFileList.isNotEmpty()
     }
 
     override fun onResume() {
         super.onResume()
-        // updates class cards in horizontal scroll
-        addClasssesToHorizontalScroll()
-        checkAndUpdateClass()
+        if (!afterOnCreate) {
+            // updates class cards in horizontal scroll
+            addClasssesToHorizontalScroll()
+            checkAndUpdateClass()
+        }
+        showNotesIfAvailable()
+        afterOnCreate = false
     }
 
     private fun jsonDataFileExists(): Boolean {
@@ -244,6 +309,7 @@ class MainActivity : AppCompatActivity() {
         val nextClassDisplayed =
             findViewById<TextView>(R.id.next_subject_header).text.toString()
 
+        findViewById<TextView>(R.id.time_remaining_header).text = timeDifference(currentClass)
 
         if (currentClassDisplayed != currentClass["subject"] || nextClassDisplayed != nextClass["subject"]) {
             updateHeaderViews(currentClass)
